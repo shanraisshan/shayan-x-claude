@@ -1,2 +1,2 @@
-# lets-learn-together
-lets learn together
+# shayan x claude
+lets learn
