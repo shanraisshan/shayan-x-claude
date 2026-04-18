@@ -1,0 +1,2 @@
+# Local MCP config — contains secrets (GitHub PAT); never commit.
+.mcp.json
