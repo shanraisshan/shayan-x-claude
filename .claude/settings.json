@@ -356,5 +356,6 @@
         ]
       }
     ]
-  }
+  },
+  "plansDirectory": "./docs/plans"
 }
