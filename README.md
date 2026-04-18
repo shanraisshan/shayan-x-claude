@@ -1,4 +1,5 @@
-# shayan x claude
+# learning x claude
+applying workflows and best practice to a shopping app
 
 ## Calculator App
 
