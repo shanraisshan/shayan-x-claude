@@ -23,8 +23,8 @@ See `PLAN.md` for the full architectural plan.
 
 Open the Supabase SQL editor and run, in order:
 
-1. `db/migrations/0001_init.sql`
-2. `db/seed.sql` (optional — seeds 8 demo products)
+1. `backend/db/migrations/0001_init.sql`
+2. `backend/db/seed.sql` (optional — seeds 8 demo products)
 
 Then verify the `product-images` bucket exists under Storage.
 
@@ -98,4 +98,4 @@ See `PLAN.md`. Key dirs:
 - `frontend/app/admin` — admin panel (gated by `middleware.ts`)
 - `backend/app/routers` — FastAPI routers: `public.py`, `orders.py`, `admin.py`
 - `backend/app/auth.py` — Supabase JWT verification + `require_admin` dep
-- `db/migrations` — SQL schema, RLS, and the transactional `create_order` RPC
+- `backend/db/migrations` — SQL schema, RLS, and the transactional `create_order` RPC

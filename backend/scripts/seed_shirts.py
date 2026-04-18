@@ -1,6 +1,6 @@
 """One-shot seeder: pulls real apparel data from DummyJSON and upserts it into
 products via Supabase REST (service-role key), then writes a canonical
-db/seed.sql so the seed is reproducible.
+backend/db/seed.sql so the seed is reproducible.
 
 Usage:
     cd backend
@@ -14,8 +14,8 @@ import sys
 import urllib.request
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "backend"))
+BACKEND = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(BACKEND))
 
 from app.config import get_settings  # noqa: E402
 from app.supabase_client import get_supabase  # noqa: E402
@@ -120,9 +120,9 @@ def main() -> int:
     sb.table("products").upsert(rows, on_conflict="slug").execute()
     print(f"upserted {len(rows)} apparel products")
 
-    seed_path = ROOT / "db" / "seed.sql"
+    seed_path = BACKEND / "db" / "seed.sql"
     write_seed_sql(rows, seed_path)
-    print(f"wrote canonical seed to {seed_path.relative_to(ROOT)}")
+    print(f"wrote canonical seed to {seed_path.relative_to(BACKEND.parent)}")
 
     # Quick sanity read
     resp = (

@@ -74,13 +74,13 @@ learning-x-claude/
 │   │   └── services/              # business logic
 │   ├── scripts/
 │   │   └── seed_shirts.py          # pulls real apparel from DummyJSON → products
+│   ├── db/                # Supabase migrations + seed + admin bootstrap
+│   │   ├── migrations/0001_init.sql
+│   │   ├── seed.sql
+│   │   └── create_admin.sql
 │   ├── tests/
 │   ├── pyproject.toml
 │   └── Dockerfile
-│
-├── db/                    # Supabase migrations
-│   ├── migrations/0001_init.sql
-│   └── seed.sql
 │
 ├── .github/workflows/
 │   ├── frontend.yml         # typecheck, lint, build
@@ -93,7 +93,7 @@ learning-x-claude/
 
 ## Database Schema (Supabase)
 
-Single migration `db/migrations/0001_init.sql`:
+Single migration `backend/db/migrations/0001_init.sql`:
 
 - **`products`** — `id uuid pk`, `slug text unique`, `name`, `description`, `price_cents int`, `currency text default 'USD'`, `image_url text`, `stock int`, `is_active bool`, `created_at`, `updated_at`
 - **`orders`** — `id uuid pk`, `email text`, `shipping_name`, `shipping_address jsonb`, `subtotal_cents int`, `total_cents int`, `status text check in ('pending','paid','shipped','cancelled') default 'pending'`, `created_at`, `updated_at`
@@ -191,7 +191,7 @@ Admins are created manually via Supabase dashboard:
 
 ## Critical Files
 
-- `db/migrations/0001_init.sql` — schema + RLS + RPC
+- `backend/db/migrations/0001_init.sql` — schema + RLS + RPC
 - `backend/app/main.py`, `config.py`, `supabase_client.py`, `auth.py`
 - `backend/app/routers/public.py`, `orders.py`, `admin.py`
 - `frontend/middleware.ts` — admin gating
