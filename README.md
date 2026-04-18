@@ -7,7 +7,7 @@ Next.js storefront + FastAPI backend + Supabase (Postgres, Storage, Auth).
 - Payments are **mocked**: `POST /api/orders` marks the order `paid` immediately.
 - Product images are stored in a Supabase Storage `product-images` bucket.
 
-See `PLAN.md` for the full architectural plan.
+See `CLAUDE.md` for the full architectural plan.
 
 ---
 
@@ -92,7 +92,7 @@ Open:
 
 ## Project layout
 
-See `PLAN.md`. Key dirs:
+See `CLAUDE.md`. Key dirs:
 
 - `frontend/app/(store)` — public storefront
 - `frontend/app/admin` — admin panel (gated by `middleware.ts`)

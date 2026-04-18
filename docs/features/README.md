@@ -5,7 +5,7 @@ Each folder below slices the MVP into one feature. Every feature has:
 - **`plan.md`** — design: purpose, user flows, files, endpoints, DB, dependencies, verification.
 - **`task.md`** — tracked checklist: what's shipped and what remains.
 
-Read [`../../PLAN.md`](../../PLAN.md) first for the overall architecture.
+Read [`../../CLAUDE.md`](../../CLAUDE.md) first for the overall architecture.
 
 | Feature | Plan | Tasks |
 | --- | --- | --- |
