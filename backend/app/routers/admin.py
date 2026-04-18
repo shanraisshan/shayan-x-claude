@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, Query, Response, UploadFile, status
+from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 
 from app.auth import AuthedUser, require_admin
 from app.schemas.order import Order, OrderStatus, OrderStatusUpdate, OrderWithItems
@@ -44,12 +44,6 @@ def create_product(data: ProductCreate, _admin: AdminDep):
 @router.patch("/products/{product_id}", response_model=Product)
 def update_product(product_id: UUID, data: ProductUpdate, _admin: AdminDep):
     return products_svc.update_product(product_id, data)
-
-
-@router.delete("/products/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_product(product_id: UUID, _admin: AdminDep):
-    products_svc.soft_delete_product(product_id)
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post("/products/upload-image")

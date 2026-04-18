@@ -52,10 +52,3 @@ def update_product(product_id: UUID, data: ProductUpdate) -> dict:
     if not resp.data:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "product_not_found")
     return resp.data[0]
-
-
-def soft_delete_product(product_id: UUID) -> None:
-    sb = get_supabase()
-    resp = sb.table("products").update({"is_active": False}).eq("id", str(product_id)).execute()
-    if not resp.data:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "product_not_found")

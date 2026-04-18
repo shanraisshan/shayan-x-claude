@@ -118,8 +118,7 @@ Public:
 Admin (require_admin dep):
 - `GET  /api/admin/products` — list (includes inactive)
 - `POST /api/admin/products` — create
-- `PATCH /api/admin/products/{id}` — update
-- `DELETE /api/admin/products/{id}` — soft delete
+- `PATCH /api/admin/products/{id}` — update (toggle `is_active` here to hide from the storefront; no separate delete endpoint)
 - `POST /api/admin/products/upload-image` — multipart image → Supabase Storage → returns public URL
 - `GET  /api/admin/orders` — list with status filter
 - `GET  /api/admin/orders/{id}` — order with items
@@ -143,7 +142,7 @@ Admin (require_admin dep):
 **Admin:**
 - `middleware.ts` checks Supabase session cookie; redirects unauthenticated hits on `/admin/**` to `/admin/login`
 - Admin pages also verify `app_metadata.role === 'admin'` server-side; non-admin logged-in users get 403
-- Product list → table with edit/delete, "New product" form with image upload
+- Product list → table with edit link, "New product" form with image upload
 - Orders list → filter by status, detail shows items + status transitions
 
 **Image upload path:** Frontend sends multipart file to FastAPI → FastAPI uses Supabase service-role client to upload to Storage → returns URL stored on product row. (Keeps service-role key server-side.)

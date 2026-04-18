@@ -93,10 +93,6 @@ export function adminUpdateProduct(token: string, id: string, data: Partial<Prod
   });
 }
 
-export function adminDeleteProduct(token: string, id: string) {
-  return api<void>(`/api/admin/products/${id}`, { method: "DELETE", token });
-}
-
 export async function adminUploadImage(token: string, file: File): Promise<{ url: string }> {
   const fd = new FormData();
   fd.append("file", file);

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { adminDeleteProduct, adminListProducts } from "@/lib/api";
+import { adminListProducts } from "@/lib/api";
 import { formatMoney, type Product } from "@/lib/types";
 import { useAdminToken } from "@/components/admin/useAdminToken";
 
@@ -28,13 +28,6 @@ export default function AdminProductsPage() {
   useEffect(() => {
     void load();
   }, [load]);
-
-  async function onDelete(id: string) {
-    if (!token) return;
-    if (!confirm("Soft-delete this product?")) return;
-    await adminDeleteProduct(token, id);
-    void load();
-  }
 
   return (
     <div>
@@ -74,16 +67,9 @@ export default function AdminProductsPage() {
                 <td className="py-2">{p.stock}</td>
                 <td className="py-2">{p.is_active ? "Yes" : "No"}</td>
                 <td className="py-2 text-right">
-                  <Link href={`/admin/products/${p.id}/edit`} className="mr-3 hover:underline">
+                  <Link href={`/admin/products/${p.id}/edit`} className="hover:underline">
                     Edit
                   </Link>
-                  <button
-                    type="button"
-                    onClick={() => void onDelete(p.id)}
-                    className="text-red-600 hover:underline"
-                  >
-                    Delete
-                  </button>
                 </td>
               </tr>
             ))}
