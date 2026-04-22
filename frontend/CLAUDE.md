@@ -8,6 +8,7 @@ The only thing end users see. Storefront is fully public; admin routes are gated
 - Tailwind CSS
 - `@supabase/ssr` for browser + server clients
 - React Context for cart state — no Redux, no React Query, no Formik, no Zod
+- **Tests:** Vitest + React Testing Library + jsdom (see Testing below)
 
 ## Folder Layout
 
@@ -101,13 +102,32 @@ Single typed surface for the FastAPI backend:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `NEXT_PUBLIC_API_URL` — FastAPI base URL
 
+## Testing
+
+- Runner: **Vitest** (`npm test` for one-shot, `npm run test:watch` during dev)
+- DOM env: **jsdom**, global setup at `frontend/test/setup.ts` (imports `@testing-library/jest-dom/vitest` and stubs the `NEXT_PUBLIC_*` env vars)
+- Helpers: `renderWithCart` from `frontend/test/utils.tsx` wraps the UI in `CartProvider`
+- Config: `frontend/vitest.config.ts` (jsdom, `@` alias, `**/*.test.{ts,tsx}`)
+- Patterns + do's/don'ts: `.claude/skills/frontend-testing/SKILL.md`
+
+**Conventions:**
+- Co-locate tests with the file under test (`Foo.tsx` → `Foo.test.tsx`)
+- Mock `@/lib/api` with `vi.mock`; mock `fetch` only when testing `lib/api.ts` itself
+- Server Components: call them as `async` functions (`await Page({ params })`) and `render` the returned JSX
+- Query by role/label/text; don't add test IDs unless nothing else works
+- Don't test `middleware.ts`, Tailwind class names, or third-party internals
+
+CI runs `npm test` between `typecheck` and `build` in `.github/workflows/frontend.yml`. The `test-engineer` agent writes these tests automatically during `/ship`; you rarely need to do it by hand.
+
 ## Local Dev
 
 ```bash
 cd frontend
 npm install
 npm run dev          # http://localhost:3000
-npx tsc --noEmit
+npm run lint
+npm run typecheck
+npm test             # Vitest (watch: npm run test:watch)
 npm run build
 ```
 
@@ -127,5 +147,7 @@ npm run build
 ## Pointers
 
 - Specialist agent: `.claude/agents/frontend-engineer.md`
-- Detail skills: `.claude/skills/frontend-component-builder/SKILL.md`, `.claude/skills/frontend-api-integration/SKILL.md`
+- Tests are written by: `.claude/agents/test-engineer.md`
+- Detail skills: `.claude/skills/frontend-component-builder/SKILL.md`, `.claude/skills/frontend-api-integration/SKILL.md`, `.claude/skills/frontend-testing/SKILL.md`
 - Per-feature plans: `docs/features/*/plan.md` + `task.md`
+- Overall workflow (`/planning` → `/ship`): root `CLAUDE.md::Workflow`
