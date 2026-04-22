@@ -38,6 +38,17 @@
             "statusMessage": "PostToolUse"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/lint_on_edit.py",
+            "timeout": 20000,
+            "statusMessage": "lint on edit"
+          }
+        ]
       }
     ],
     "PostToolUseFailure": [
