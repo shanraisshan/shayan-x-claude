@@ -1,2 +1,5 @@
 # Local MCP config — contains secrets (GitHub PAT); never commit.
 .mcp.json
+
+# Claude Code runtime artifacts
+.claude/scheduled_tasks.lock
