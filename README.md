@@ -99,3 +99,30 @@ See `CLAUDE.md`. Key dirs:
 - `backend/app/routers` — FastAPI routers: `public.py`, `orders.py`, `admin.py`
 - `backend/app/auth.py` — Supabase JWT verification + `require_admin` dep
 - `backend/db/migrations` — SQL schema, RLS, and the transactional `create_order` RPC
+
+---
+
+## Shipping a feature (Claude Code workflow)
+
+The repo uses a plan → ship pipeline driven by Claude Code agents, skills, and slash commands (all in `.claude/`). Full details in `CLAUDE.md::Workflow`; the short version:
+
+1. **Plan** — `/planning "<what you want>"` spawns the `planner` agent, which writes `docs/features/<slug>/plan.md` + `task.md`.
+2. **Ship** — `git checkout -b feature/<slug>` then `/ship <slug>`. The `/ship` command chains:
+   - Implement (routes tasks to `backend-engineer` / `frontend-engineer`)
+   - Test (`test-engineer` writes Vitest + pytest tests)
+   - Lint (automatic via the `PostToolUse` hook in `.claude/settings.json`, plus a batch gate)
+   - Browser verify (`browser-verifier` drives `claude-in-chrome` — needs dev servers on `:3000`/`:8000`)
+   - Review (`code-reviewer` checks the diff against the plan)
+   - Open the PR via `gh pr create` with a body built from `plan.md`
+3. Each phase pauses for a y/n checkpoint before starting, so you can intervene.
+
+Tests and linting run in CI too:
+- `.github/workflows/frontend.yml` runs `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`
+- `.github/workflows/backend.yml` runs `ruff`, `mypy`, `pytest`
+
+Run locally:
+
+```bash
+cd frontend && npm test                 # Vitest + React Testing Library
+cd backend  && uv run pytest            # pytest + httpx
+```
