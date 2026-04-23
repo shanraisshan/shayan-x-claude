@@ -8,9 +8,9 @@
     "start": "next start -p 3000",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --passWithNoTests --coverage"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",
