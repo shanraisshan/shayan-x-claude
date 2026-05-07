@@ -41,9 +41,15 @@ learning-x-claude/
 │   ├── features/    # one folder per feature: plan.md + task.md
 │   └── plans/
 └── .claude/
-    ├── agents/      # planner, frontend-engineer, backend-engineer
-    ├── skills/      # patterns the engineer agents consult
-    └── commands/    # /implement <slug> drives a planned feature
+    ├── agents/      # planner, backend-engineer, frontend-engineer,
+    │                # test-engineer, code-reviewer, browser-verifier
+    ├── skills/      # patterns the agents consult (endpoint-builder,
+    │                # database-ops, component-builder, api-integration,
+    │                # frontend-testing, backend-testing,
+    │                # code-review, browser-verification)
+    ├── commands/    # /planning, /implement <slug>, /ship <slug>
+    ├── hooks/       # scripts/lint_on_edit.py — PostToolUse lint router
+    └── settings.json
 ```
 
 ## Where to Look
@@ -53,16 +59,28 @@ learning-x-claude/
 | Work on the frontend | [`frontend/CLAUDE.md`](frontend/CLAUDE.md) |
 | Work on the backend or DB | [`backend/CLAUDE.md`](backend/CLAUDE.md) |
 | Understand a specific feature | `docs/features/<slug>/plan.md` + `task.md` |
-| Plan a new feature | run the `planner` agent — see `.claude/agents/planner.md` |
-| Implement a planned feature | run `/implement <slug>` — see `.claude/commands/implement.md` |
+| Plan a new feature | `/planning <requirements>` or run the `planner` agent directly — `.claude/agents/planner.md` |
+| Implement a planned feature | run `/implement <slug>` — `.claude/commands/implement.md` |
+| Ship a feature plan → PR end-to-end | run `/ship <slug>` — `.claude/commands/ship.md` |
 | Deep frontend patterns | `.claude/skills/frontend-component-builder/SKILL.md`, `frontend-api-integration/SKILL.md` |
 | Deep backend patterns | `.claude/skills/backend-endpoint-builder/SKILL.md`, `backend-database-ops/SKILL.md` |
+| Write tests for a feature | `.claude/skills/frontend-testing/SKILL.md`, `backend-testing/SKILL.md` (the `test-engineer` agent consults these) |
+| Review a diff before PR | `.claude/skills/code-review/SKILL.md` (the `code-reviewer` agent consults this) |
+| Exercise a UI flow in Chrome | `.claude/skills/browser-verification/SKILL.md` (the `browser-verifier` agent consults this) |
 
 ## Workflow
 
-1. **Plan** — describe the feature; the `planner` agent surveys the codebase, asks clarifying questions only when needed, and writes `docs/features/<slug>/plan.md` + `task.md` with each task tagged `[backend-engineer]` / `[frontend-engineer]` / `[both]`.
-2. **Implement** — `/implement <slug>` reads the plan, classifies tasks by their owner tag, and dispatches to `backend-engineer` and/or `frontend-engineer` (backend first when the frontend depends on a new API surface; parallel when independent).
-3. **Verify** — run the steps in `plan.md::Verify`; engineer agents update `task.md` (`[ ]` → `[x]`) as work lands.
+The pipeline is **Plan → Ship**. `/ship <slug>` runs the full sequence with a checkpoint between each phase; individual commands (`/implement`, etc.) still work for partial runs.
+
+1. **Plan** — `/planning <requirements>` spawns the `planner` agent, which surveys the codebase, asks clarifying questions only when needed, and writes `docs/features/<slug>/plan.md` + `task.md` with each task tagged `[backend-engineer]` / `[frontend-engineer]` / `[both]`.
+2. **Ship** — `/ship <slug>` chains the remaining phases:
+   - **A. Implement** — delegates to `/implement` routing; dispatches `backend-engineer` / `frontend-engineer` per task tags (backend first when the frontend depends on a new API surface).
+   - **B. Test** — `test-engineer` writes Vitest + RTL tests co-located in `frontend/` and pytest tests in `backend/tests/`, covering the happy path + every error branch named in `plan.md`.
+   - **C. Lint** — the `PostToolUse` hook in `.claude/settings.json` fires after every Edit/Write, running ESLint on frontend files and `uv run ruff check` on backend files; `/ship` also runs a batch `npm run lint && npm run typecheck` + `ruff check . && mypy app` gate after tests.
+   - **D. Browser verify** (skipped if no UI flow) — `browser-verifier` drives the `claude-in-chrome` MCP against the running dev servers (`:3000` / `:8000`), asserts a clean console + no 4xx/5xx, and records `docs/features/<slug>/verify.gif`.
+   - **E. Review** — `code-reviewer` diffs against `origin/main`, checks plan alignment + security gates + layering, and returns `APPROVE` or `CHANGES_REQUESTED` (up to 2 loops back to the engineer).
+   - **F. PR** — on clean working tree, `gh pr create` opens a PR with body built from `plan.md` (summary + Verify checklist + link to `verify.gif`).
+3. **Verify** — run the shell steps in `plan.md::Verify`; engineer agents update `task.md` (`[ ]` → `[x]`) as work lands.
 
 ## Env Vars (summary)
 

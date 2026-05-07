@@ -111,7 +111,19 @@ uv sync
 uv run uvicorn app.main:app --reload --port 8000
 uv run pytest
 uv run ruff check .
+uv run mypy app
 ```
+
+## Testing
+
+- Framework: **pytest** with `asyncio_mode = "auto"`; integration via `fastapi.testclient.TestClient`
+- Test files: `backend/tests/test_*.py` — mirror the module under test (`test_<name>_service.py`, `test_<name>_router.py`)
+- Auth: override `app.dependency_overrides[current_user]` in a `try/finally` — pattern in `tests/test_health.py`
+- Supabase: never hit a real project; mock at the service boundary — `monkeypatch.setattr("app.services.<mod>.get_supabase", lambda: fake)` using `FakeSupabase` from `tests/fakes.py`
+- Assert snake_case `detail` strings for domain errors (`r.json()["detail"] == "stock_exceeded"`)
+- Patterns, fixtures, and the `FakeSupabase` template: `.claude/skills/backend-testing/SKILL.md`
+
+The `test-engineer` agent writes these automatically during `/ship`; `conftest.py` stubs env with harmless defaults so tests import the app without real credentials.
 
 ## Conventions / Non-Negotiables
 
@@ -130,5 +142,7 @@ uv run ruff check .
 ## Pointers
 
 - Specialist agent: `.claude/agents/backend-engineer.md`
-- Detail skills: `.claude/skills/backend-endpoint-builder/SKILL.md`, `.claude/skills/backend-database-ops/SKILL.md`
+- Tests are written by: `.claude/agents/test-engineer.md`
+- Detail skills: `.claude/skills/backend-endpoint-builder/SKILL.md`, `.claude/skills/backend-database-ops/SKILL.md`, `.claude/skills/backend-testing/SKILL.md`
 - Per-feature plans: `docs/features/*/plan.md` + `task.md`
+- Overall workflow (`/planning` → `/ship`): root `CLAUDE.md::Workflow`
